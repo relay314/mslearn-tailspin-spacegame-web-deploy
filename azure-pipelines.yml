@@ -11,7 +11,8 @@ stages:
   - job: 'Build'
     displayName: 'Build job'
     pool:
-      vmImage: 'ubuntu-20.04'
+      name: 'Default'
+    ##  vmImage: 'ubuntu-20.04'
       demands:
       - npm
 
@@ -71,7 +72,8 @@ stages:
   jobs:
   - deployment: Deploy
     pool:
-      vmImage: 'ubuntu-20.04'
+      name: 'Default'
+    ##  vmImage: 'ubuntu-20.04'
     environment: dev
     variables:
     - group: Release
@@ -86,6 +88,7 @@ stages:
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               appName: '$(WebAppNameDev)'
+              appType: webAppLinux
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
 - stage: 'Test'
@@ -94,7 +97,8 @@ stages:
   jobs:
   - deployment: Deploy
     pool:
-      vmImage: 'ubuntu-20.04'
+      name: 'Default'
+    ##  vmImage: 'ubuntu-20.04'
     environment: test
     variables:
     - group: 'Release'
@@ -109,15 +113,17 @@ stages:
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               appName: '$(WebAppNameTest)'
+              appType: webAppLinux
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
 
 - stage: 'Staging'
   displayName: 'Deploy to the staging environment'
-  dependsOn: Test
+  dependsOn: Dev
   jobs:
   - deployment: Deploy
     pool:
-      vmImage: 'ubuntu-20.04'
+      name: 'Default'
+    ##  vmImage: 'ubuntu-20.04'
     environment: staging
     variables:
     - group: 'Release'
@@ -132,4 +138,5 @@ stages:
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               appName: '$(WebAppNameStaging)'
+              appType: webAppLinux
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
